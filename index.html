@@ -53,8 +53,14 @@
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#desktopInstall">
       產生按鈕
     </button><br><br><br><br>
-    <a class="btn btn-secondary" href="https://twitter.com/imshouko">
-      @imshouko
+    <a class="btn btn-secondary" target="_blank" href="https://twitter.com/imshouko">
+      twitter
+    </a>&nbsp;&nbsp;&nbsp;
+    <a class="btn btn-secondary" target="_blank" href="https://www.facebook.com/joyful.cuff">
+      facebook
+    </a>&nbsp;&nbsp;&nbsp;
+    <a class="btn btn-secondary" target="_blank" href="https://github.com/shouko">
+      github
     </a><br><br>
   </main>
 
@@ -131,7 +137,7 @@
           input.type = 'checkbox';
           if (placeholder) input.checked = typeof defaultValue === 'undefined' ? true : defaultValue;
         } else {
-          input.placeholder = placeholder;
+          input.placeholder = `例: ${placeholder}`;
         }
         input.addEventListener('change', () => renderBookmarkButtonLink(r));
         const br = document.createElement('br');
