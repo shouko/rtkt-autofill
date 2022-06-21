@@ -1,0 +1,150 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta property="og:image" content="https://rtkt.shouko.tw/screenshot.png"/>
+    <title>Rakuten Ticket 速填工具</title>
+    <link rel="canonical" href="https://rtkt.shouko.tw/">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      .screenshot {
+        width: 100%;
+        border-radius: 25px;
+      }
+
+      form > input {
+        margin-left: 5px;
+        margin-top: 5px;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+    <link href="style.css" rel="stylesheet">
+  </head>
+  <body class="text-center">
+    <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+  <main role="main" class="inner cover">
+    <h1 class="cover-heading">Rakuten Ticket 速填工具</h1>
+    <p class="lead">成為申込小天才!</p>
+    <p>
+      <img src="screenshot.jpg" class="screenshot">
+    </p>
+    <p class="lead">
+      <select id="event-preset-key">
+        <option value="2022_summer" selected>2022 夏巡</option>
+      </select><br />
+      <form id="form">
+      </form>
+    </p>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#desktopInstall">
+      產生按鈕
+    </button><br><br><br><br>
+    <a class="btn btn-secondary" href="https://twitter.com/imshouko">
+      @imshouko
+    </a><br><br>
+  </main>
+
+  <div class="modal fade" id="desktopInstall" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 id="exampleModalLabel" style="color:black;text-shadow:none">安裝與使用</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body modal-text">
+          <h5>確定書籤列存在</h5>
+          Windows: Ctrl + Shift + B<br>
+          macOS: Command + Shift + B<br>
+          <br>
+          <h5>拖曳安裝</h5>
+        按著下面的按鈕不放，拖曳到上方「書籤列」<br>
+        <a href="" id="bookmark-button" class="btn btn-primary">[ 快速填寫 ]</a><br>
+        <video src="install_bookmark.mp4" autoplay muted loop style="width: 50%"></video><br><br>
+          <h5>如何使用</h5>
+          在抽票頁面點選書籤列的按鈕，即可自動填入。<br>記得再手動選場次跟張數。<br>
+          <video src="run_bookmark.mp4" autoplay muted loop style="width: 75%"></video><br><br>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="mastfoot mt-auto">
+    <div class="inner">
+      <p>&copy; 2022 shouko. template by @mdo.</p>
+    </div>
+  </footer>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JFZ0MKGHFY"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(...args) { window.dataLayer.push(args); }
+  gtag('js', new Date());
+
+  gtag('config', 'G-JFZ0MKGHFY');
+
+  function renderBookmarkButtonLink(preset) {
+    const handler = '([fid, val]) => { const el = document.getElementById(fid); if (val === true) { el.checked = true; } else { el.value = val; }}';
+    const data = preset.map(([, id, placeholder]) => {
+      const el = document.getElementById(`form_${id}`);
+      return [id, typeof placeholder === 'boolean' ? el.checked : el.value];
+    });
+    const href = `javascript:(() => {${JSON.stringify(data)}.map(${handler})})()`;
+    document.getElementById('bookmark-button').href = href;
+  }
+
+  function renderForm() {
+    const eventPresetKey = $('#event-preset-key').val();
+    const url = `./data/${eventPresetKey}.json`;
+    fetch(url).then((r) => r.json()).then((r) => {
+      if (!Array.isArray(r)) {
+        /* eslint-disable no-alert */
+        alert('Malformed preset.');
+        return;
+      }
+
+      const form = document.getElementById('form');
+      form.innerHTML = '';
+      r.flatMap(([extra, id, placeholder, defaultValue]) => {
+        const label = document.createTextNode(extra || id);
+        const input = document.createElement('input');
+        input.id = `form_${id}`;
+        if (typeof placeholder === 'boolean') {
+          input.type = 'checkbox';
+          if (placeholder) input.checked = typeof defaultValue === 'undefined' ? true : defaultValue;
+        } else {
+          input.placeholder = placeholder;
+        }
+        input.addEventListener('change', () => renderBookmarkButtonLink(r));
+        const br = document.createElement('br');
+        return [label, input, br];
+      }).forEach((e) => form.appendChild(e));
+      renderBookmarkButtonLink(r);
+    });
+  }
+
+  $(document).ready(() => {
+    renderForm();
+    $('#event-preset-key').change(() => renderForm());
+  });
+</script>
+</body>
+</html>
